@@ -6,8 +6,7 @@ import {
   calculateFplPercent,
   evaluateResidency,
   screenMediCal,
-  evaluateCliffAlerts,
-  getCsrTier
+  evaluateCliffAlerts
 } from '../src/subsidyEngine.js';
 
 const provenance = JSON.parse(fs.readFileSync(new URL('../data/provenance.json', import.meta.url), 'utf-8'));
