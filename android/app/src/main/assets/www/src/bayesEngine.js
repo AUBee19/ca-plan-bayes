@@ -20,6 +20,23 @@ let k = 0, p = 1.0;
 do { k++; p *= rng(); } while (p > L);
 return k - 1;
 }
+function claims(d, rng, floor) {
+const n = samplePoisson(d.frequency_lambda, rng);
+let c = 0;
+for (let k = 0; k < n; k++) c += Math.max(floor, d.severity_mean + d.severity_sd * sampleNormal(rng));
+return [n, c];
+}
+function memberOop(m, b, medDed, rxDed) {
+const freeV = Math.min(m.opCnt, b.pre_deductible_pcp_visits);
+const vCost = m.opCnt > 0 ? (m.opCost / m.opCnt) : 0;
+const medClaims = (m.opCnt - freeV) * vCost + m.erCost;
+const medA = medDed > 0 ? Math.min(medClaims, medDed) : 0;
+const rxA = rxDed > 0 ? Math.min(m.rxCost, rxDed) : 0;
+let mOop = freeV * b.pcp_copay;
+mOop += medA + (medClaims - medA) * b.coinsurance_rate;
+mOop += rxA + (m.rxCost - rxA) * b.coinsurance_rate;
+return { mOop, medA };
+}
 export function validatePriors(d) {
 if (!d?.claim_distributions) throw new Error('priorsData.claim_distributions is required and missing.');
 for (const s of ['S1', 'S2', 'S3', 'S4']) {
@@ -103,18 +120,10 @@ const r = rng();
 let state = 'S1';
 for (const item of cum) { if (r <= item.c) { state = item.s; break; } }
 const dist = priorsData.claim_distributions[state];
-let opCnt = samplePoisson(dist.outpatient_visits.frequency_lambda, rng);
-let opCost = 0;
-for (let k = 0; k < opCnt; k++) opCost += Math.max(10, dist.outpatient_visits.severity_mean + dist.outpatient_visits.severity_sd * sampleNormal(rng));
-const genCnt = samplePoisson(dist.generic_rx.frequency_lambda, rng);
-let genCost = 0;
-for (let k = 0; k < genCnt; k++) genCost += Math.max(5, dist.generic_rx.severity_mean + dist.generic_rx.severity_sd * sampleNormal(rng));
-const brCnt = samplePoisson(dist.brand_specialty_rx.frequency_lambda, rng);
-let brCost = 0;
-for (let k = 0; k < brCnt; k++) brCost += Math.max(20, dist.brand_specialty_rx.severity_mean + dist.brand_specialty_rx.severity_sd * sampleNormal(rng));
-const erCnt = samplePoisson(dist.er_inpatient.frequency_lambda, rng);
-let erCost = 0;
-for (let k = 0; k < erCnt; k++) erCost += Math.max(100, dist.er_inpatient.severity_mean + dist.er_inpatient.severity_sd * sampleNormal(rng));
+const [opCnt, opCost] = claims(dist.outpatient_visits, rng, 10);
+const [genCnt, genCost] = claims(dist.generic_rx, rng, 5);
+const [brCnt, brCost] = claims(dist.brand_specialty_rx, rng, 20);
+const [erCnt, erCost] = claims(dist.er_inpatient, rng, 100);
 let members;
 if (!isFam) {
 members = [{ opCnt, opCost, rxCost: genCost + brCost, erCost }];
@@ -141,22 +150,7 @@ for (let i = 0; i < N; i++) {
 const mems = draws[i];
 let oop = 0;
 if (!isFam) {
-const m = mems[0];
-let mDed = b.medical_deductible_ind;
-let rDed = b.rx_deductible_ind;
-const freeV = Math.min(m.opCnt, b.pre_deductible_pcp_visits);
-let mOop = freeV * b.pcp_copay;
-const vCost = m.opCnt > 0 ? (m.opCost / m.opCnt) : 0;
-const medClaims = (m.opCnt - freeV) * vCost + m.erCost;
-if (mDed > 0) {
-const a = Math.min(medClaims, mDed);
-mOop += a + (medClaims - a) * b.coinsurance_rate;
-} else mOop += medClaims * b.coinsurance_rate;
-if (rDed > 0) {
-const a = Math.min(m.rxCost, rDed);
-mOop += a + (m.rxCost - a) * b.coinsurance_rate;
-} else mOop += m.rxCost * b.coinsurance_rate;
-oop = Math.min(mOop, b.oop_max_ind);
+oop = Math.min(memberOop(mems[0], b, b.medical_deductible_ind, b.rx_deductible_ind).mOop, b.oop_max_ind);
 } else {
 if (b.family_deductible_structure === 'aggregate') {
 let totMed = 0, totRx = 0;
@@ -168,21 +162,10 @@ oop = Math.min(a + (tot - a) * b.coinsurance_rate, b.oop_max_fam);
 let famMedRem = b.medical_deductible_fam;
 let famAccum = 0;
 for (const m of mems) {
-let mDed = Math.min(b.medical_deductible_ind, famMedRem);
-const freeV = Math.min(m.opCnt, b.pre_deductible_pcp_visits);
-let mOop = freeV * b.pcp_copay;
-const vCost = m.opCnt > 0 ? (m.opCost / m.opCnt) : 0;
-const medClaims = (m.opCnt - freeV) * vCost + m.erCost;
-if (mDed > 0) {
-const a = Math.min(medClaims, mDed);
-mOop += a + (medClaims - a) * b.coinsurance_rate;
-famMedRem = Math.max(0, famMedRem - a);
-} else mOop += medClaims * b.coinsurance_rate;
-if (b.rx_deductible_ind > 0) {
-const a = Math.min(m.rxCost, b.rx_deductible_ind);
-mOop += a + (m.rxCost - a) * b.coinsurance_rate;
-} else mOop += m.rxCost * b.coinsurance_rate;
-famAccum += Math.min(mOop, b.oop_max_ind);
+const mDed = Math.min(b.medical_deductible_ind, famMedRem);
+const r = memberOop(m, b, mDed, b.rx_deductible_ind);
+if (mDed > 0) famMedRem = Math.max(0, famMedRem - r.medA);
+famAccum += Math.min(r.mOop, b.oop_max_ind);
 }
 oop = Math.min(famAccum, b.oop_max_fam);
 }
