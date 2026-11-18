@@ -1,0 +1,21 @@
+{
+  "name": "ca-plan-bayes",
+  "version": "1.0.0",
+  "description": "Covered California Bayesian Health Plan Decision App",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "sync:android": "node scripts/sync-android-assets.js",
+    "serve": "node -e \"const http = require('http'); const fs = require('fs'); const path = require('path'); const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.svg': 'image/svg+xml' }; http.createServer((req, res) => { const filePath = path.join(process.cwd(), req.url === '/' ? 'index.html' : req.url.split('?')[0]); fs.readFile(filePath, (err, data) => { if (err) { res.writeHead(404); res.end('Not Found'); return; } res.writeHead(200, { 'Content-Type': mime[path.extname(filePath)] || 'text/plain' }); res.end(data); }); }).listen(3000, () => console.log('Serving locally at http://localhost:3000'));\""
+  },
+  "keywords": [
+    "covered-california",
+    "health-insurance",
+    "commercial-plans",
+    "bayesian",
+    "monte-carlo",
+    "android"
+  ],
+  "author": "",
+  "license": "MIT"
+}

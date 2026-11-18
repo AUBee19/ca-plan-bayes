@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Covered California Bayesian Health Plan Decision App</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-bar">
+        <span class="privacy-badge">0 External Requests • Volatile Memory Only</span>
+        <div>
+          <button id="btnNonGoals" class="btn-text">Non-Goals & Disclosures</button>
+          <span style="color:var(--border)">|</span>
+          <button id="btnCecHelp" class="btn-text">Free Counselor Help (CEC)</button>
+        </div>
+      </div>
+      <h1 style="font-size:1.3rem;color:#f8fafc">Covered California & Commercial Health Plan Decision Engine</h1>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-top:2px">
+        Bayesian log-odds updating with 5,000-draw Common Random Numbers (CRN) Monte Carlo simulation.
+      </p>
+    </header>
+
+    <div class="disclaimer-banner">
+      <strong>Statutory Disclaimer:</strong> This tool is not affiliated with Covered California, DHCS, or HHS, and is not a licensed California insurance broker. Outputs are mathematical estimates — not binding premium quotes, official subsidy or Medi-Cal determinations, live provider-directory verifications, or medical advice.
+    </div>
+
+    <div class="card">
+      <h2><span>1. Coverage Category</span><span id="marketBadge" class="pill pill-actual">Covered CA</span></h2>
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="coverageCategory">Insurance Market Type</label>
+          <select id="coverageCategory">
+            <option value="covered_ca" selected>Covered California (Individual & Family)</option>
+            <option value="commercial">Commercial / Employer Plan (Open Enrollment)</option>
+          </select>
+        </div>
+        <div class="field" id="residencyField">
+          <label for="residencyStatus">California Residency & Subsidy Eligibility</label>
+          <select id="residencyStatus">
+            <option value="lawfully_present" selected>Lawfully Present (Subsidies + CSR)</option>
+            <option value="ca_medi_cal_only">CA Medi-Cal Only (Undocumented / DACA / Restricted)</option>
+            <option value="unsure_or_mixed">Mixed-Status Household / Uncertain Eligibility</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Household & Income Profile</h2>
+      <div class="grid grid-3">
+        <div class="field"><label for="householdSize">Household Size (Tax Return)</label><input type="number" id="householdSize" min="1" max="12" value="1"></div>
+        <div class="field"><label for="magi">Projected Plan Year MAGI ($/year)</label><input type="number" id="magi" min="0" step="500" value="38000"></div>
+        <div class="field"><label for="ageBand">Primary Member Age Band</label>
+          <select id="ageBand">
+            <option value="18-25">18–25</option><option value="26-34">26–34</option><option value="35-44" selected>35–44</option>
+            <option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-3" style="margin-top:8px">
+        <div class="field"><label for="memberSex">Biological Sex (MEPS Basis)</label>
+          <select id="memberSex"><option value="female" selected>Female</option><option value="male">Male</option></select>
+        </div>
+        <div class="field"><label for="hsaPlanned">Annual HSA Contribution ($/year)</label><input type="number" id="hsaPlanned" min="0" step="100" value="0"></div>
+        <div class="field"><label for="marginalTax">Est. Marginal Income Tax Rate</label>
+          <select id="marginalTax"><option value="0.12">12%</option><option value="0.22" selected>22%</option><option value="0.32">32%</option></select>
+        </div>
+      </div>
+      <div id="fplAlertArea"></div>
+    </div>
+
+    <div class="card">
+      <h2>3. Health Utilization & Evidence Clusters</h2>
+      <div class="grid grid-3">
+        <div class="field"><label for="cluster1Input">Cluster 1: Chronic & Rx (γ=0.65)</label>
+          <select id="cluster1Input">
+            <option value="none_none" selected>No Chronic Conditions • No Rx</option>
+            <option value="none_generics">No Chronic Conditions • Generic Rx</option>
+            <option value="none_brand_specialty">No Chronic Conditions • Brand/Specialty Rx</option>
+            <option value="one_none">1 Managed Condition • No Rx</option>
+            <option value="one_generics">1 Managed Condition • Generic Rx</option>
+            <option value="one_brand_specialty">1 Managed Condition • Brand/Specialty Rx</option>
+            <option value="multi_none">Multiple Conditions • No Rx</option>
+            <option value="multi_generics">Multiple Conditions • Generic Rx</option>
+            <option value="multi_brand_specialty">Multiple / Uncontrolled • Brand/Specialty Rx</option>
+          </select>
+        </div>
+        <div class="field"><label for="cluster2Input">Cluster 2: Behavioral (γ=0.55)</label>
+          <select id="cluster2Input">
+            <option value="none" selected>None</option>
+            <option value="occasional_therapy">Occasional Therapy</option>
+            <option value="continuous_therapy_mat">Continuous Therapy / MAT</option>
+          </select>
+        </div>
+        <div class="field"><label for="cluster3Input">Cluster 3: Acuity & Past Care (γ=0.35)</label>
+          <select id="cluster3Input">
+            <option value="routine" selected>Routine Preventive Care</option>
+            <option value="urgent_care">Urgent Care Visit in Past 12 Mo</option>
+            <option value="er_inpatient">ER or Inpatient in Past 12 Mo</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-2" style="margin-top:8px">
+        <div class="field"><label for="suddenBillTolerance">Sudden-Bill Tolerance (λ Risk Penalty)</label>
+          <select id="suddenBillTolerance">
+            <option value="0.0">Risk Neutral (λ = 0.0) — Expected Cost</option>
+            <option value="0.25" selected>Moderate (λ = 0.25) — Balanced Risk</option>
+            <option value="0.50">Risk Averse (λ = 0.50) — Penalize Volatility</option>
+          </select>
+        </div>
+        <div class="field"><label for="networkFilter">Network Access Hard Filter</label>
+          <select id="networkFilter">
+            <option value="all" selected>All Network Types</option>
+            <option value="ppo_epo">PPO / EPO Only (Broad Access)</option>
+            <option value="hmo">HMO Only (Integrated Systems)</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:6px">* Verify behavioral health specialists directly before enrollment (DMHC network verification).</p>
+    </div>
+
+    <div class="card">
+      <h2>4. Candidate Plan Inputs</h2>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="benchmark">Quick Benchmark Estimator</button>
+        <button class="tab-btn" data-tab="csv">CSV Upload</button>
+        <button class="tab-btn" data-tab="paste">Paste Text [Beta]</button>
+        <button class="tab-btn" data-tab="manual">Add Custom / Commercial</button>
+      </div>
+      <div id="tab-benchmark" class="tab-pane">
+        <div class="grid grid-2">
+          <div class="field"><label for="benchGrossSilver">Full Benchmark Silver Premium ($/mo) <span class="pill pill-projected">Projected</span></label><input type="number" id="benchGrossSilver" min="100" step="10" value="480"></div>
+          <div class="field"><label for="benchMonthlySubsidy">Monthly Financial Help / Subsidy ($/mo) <span class="pill pill-projected">Projected</span></label><input type="number" id="benchMonthlySubsidy" min="0" step="10" value="320"></div>
+        </div>
+      </div>
+      <div id="tab-csv" class="tab-pane hidden">
+        <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom:6px">
+        <button id="btnDownloadCsvTemplate" class="btn-secondary" style="font-size:0.8rem">Download Sample CSV Template</button>
+      </div>
+      <div id="tab-paste" class="tab-pane hidden">
+        <textarea id="pastedText" rows="3" style="width:100%;padding:6px;font-size:0.85rem" placeholder="Paste plan text..."></textarea>
+        <button id="btnParsePasted" class="btn-secondary" style="margin-top:6px;font-size:0.8rem">Scrub PII & Extract</button>
+      </div>
+      <div id="tab-manual" class="tab-pane hidden">
+        <div class="grid grid-3">
+          <div class="field"><label for="customPlanName">Plan Name</label><input type="text" id="customPlanName" placeholder="e.g. Employer PPO 500"></div>
+          <div class="field"><label for="customCarrier">Carrier</label><input type="text" id="customCarrier" placeholder="e.g. Blue Shield"></div>
+          <div class="field"><label for="customNetPremium">Employee Premium ($/mo)</label><input type="number" id="customNetPremium" min="0" value="120"></div>
+        </div>
+        <div class="grid grid-3" style="margin-top:6px">
+          <div class="field"><label for="customDed">Individual Deductible ($)</label><input type="number" id="customDed" min="0" value="500"></div>
+          <div class="field"><label for="customOopMax">Individual OOP Max ($)</label><input type="number" id="customOopMax" min="0" value="4000"></div>
+          <div class="field"><label for="customCopay">PCP Copay ($)</label><input type="number" id="customCopay" min="0" value="25"></div>
+        </div>
+        <button id="btnAddCustomPlan" class="btn-primary" style="margin-top:8px;font-size:0.85rem">Add to Comparison</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button id="btnRunSimulation" class="btn-primary" style="font-size:0.95rem;padding:8px 16px">Run 5,000-Draw Monte Carlo</button>
+      <label class="checkbox-line"><input type="checkbox" id="chkOptInStorage"> Keep during session (Opt-in)</label>
+      <button id="btnPurgeMemory" class="btn-text" style="color:var(--danger);font-size:0.85rem">Purge Memory</button>
+    </div>
+
+    <div id="resultsContainer" class="card hidden">
+      <h2><span>5. Ranked Bayesian Decision Results</span><span id="resSimCount" class="pill pill-actual">5,000 CRN Draws</span></h2>
+      <div id="attributionBanner"></div>
+      <div id="plansList" style="margin-top:10px"></div>
+    </div>
+
+    <div id="modalNonGoals" class="modal-backdrop hidden">
+      <div class="modal-content">
+        <h2 style="color:var(--primary);margin-bottom:8px">Non-Goals & Disclosures</h2>
+        <ul style="font-size:0.85rem;color:#cbd5e1;line-height:1.6;margin-left:16px;margin-bottom:12px">
+          <li><strong>Not a Broker:</strong> We do not sell insurance or bind coverage.</li>
+          <li><strong>Mathematical Estimates:</strong> Monte Carlo distributions represent statistical medians and tails derived from MEPS calibrations.</li>
+          <li><strong>Zero Cross-Origin Egress:</strong> No inputs leave your browser. All computations run in local JavaScript memory.</li>
+          <li><strong>Provider Directories:</strong> Verify doctors and medications directly with carriers.</li>
+        </ul>
+        <button id="btnCloseNonGoals" class="btn-primary">Close</button>
+      </div>
+    </div>
+
+    <div id="modalCec" class="modal-backdrop hidden">
+      <div class="modal-content">
+        <h2 style="color:var(--accent);margin-bottom:8px">Free Certified Enrollment Counselor (CEC) Handoff</h2>
+        <div style="background:#0f172a;padding:8px;border-radius:6px;font-size:0.85rem;line-height:1.6;margin-bottom:10px">
+          <p><strong>Checklist for Your Counselor Call:</strong></p>
+          <ul style="margin-left:14px;margin-top:4px">
+            <li>Proof of projected annual income (W-2, paystubs, tax return).</li>
+            <li>List of current prescriptions and primary care physicians.</li>
+            <li>Household immigration/residency documentation.</li>
+            <li>Dataset calibration verified as of: <span id="cecLastVerified">--</span></li>
+          </ul>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px">Find local help at: <strong>coveredca.com/find-help</strong> or call <strong>(800) 300-1506</strong>.</p>
+        <button id="btnCloseCec" class="btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

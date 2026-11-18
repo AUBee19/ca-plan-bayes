@@ -1,0 +1,93 @@
+{
+  "source": "Medical Expenditure Panel Survey (MEPS) 2022 Actuarial Calibration",
+  "asOf": "2026-10-01",
+  "confidence": "illustrative",
+  "note": "Actuarial approximation matrix for health plan decision modeling",
+  "age_bands": ["18-25", "26-34", "35-44", "45-54", "55-64", "65+"],
+  "sexes": ["male", "female"],
+  "states": ["S1", "S2", "S3", "S4"],
+  "priors": {
+    "18-25": {
+      "male":   { "S1": 0.68, "S2": 0.22, "S3": 0.08, "S4": 0.02 },
+      "female": { "S1": 0.56, "S2": 0.28, "S3": 0.13, "S4": 0.03 }
+    },
+    "26-34": {
+      "male":   { "S1": 0.62, "S2": 0.24, "S3": 0.11, "S4": 0.03 },
+      "female": { "S1": 0.48, "S2": 0.32, "S3": 0.16, "S4": 0.04 }
+    },
+    "35-44": {
+      "male":   { "S1": 0.52, "S2": 0.28, "S3": 0.16, "S4": 0.04 },
+      "female": { "S1": 0.44, "S2": 0.33, "S3": 0.18, "S4": 0.05 }
+    },
+    "45-54": {
+      "male":   { "S1": 0.40, "S2": 0.32, "S3": 0.22, "S4": 0.06 },
+      "female": { "S1": 0.36, "S2": 0.34, "S3": 0.23, "S4": 0.07 }
+    },
+    "55-64": {
+      "male":   { "S1": 0.28, "S2": 0.34, "S3": 0.28, "S4": 0.10 },
+      "female": { "S1": 0.26, "S2": 0.35, "S3": 0.29, "S4": 0.10 }
+    },
+    "65+": {
+      "male":   { "S1": 0.20, "S2": 0.32, "S3": 0.34, "S4": 0.14 },
+      "female": { "S1": 0.18, "S2": 0.33, "S3": 0.35, "S4": 0.14 }
+    }
+  },
+  "clusters": {
+    "cluster_1_chronic_rx": {
+      "gamma": 0.65,
+      "lr_table": {
+        "none_none":              { "S1": 1.0, "S2": 0.70, "S3": 0.30, "S4": 0.40 },
+        "none_generics":          { "S1": 1.0, "S2": 1.50, "S3": 1.80, "S4": 1.20 },
+        "none_brand_specialty":   { "S1": 1.0, "S2": 2.20, "S3": 3.80, "S4": 2.90 },
+        "one_none":               { "S1": 1.0, "S2": 1.60, "S3": 2.40, "S4": 1.80 },
+        "one_generics":           { "S1": 1.0, "S2": 2.10, "S3": 4.20, "S4": 2.50 },
+        "one_brand_specialty":    { "S1": 1.0, "S2": 2.80, "S3": 6.50, "S4": 4.20 },
+        "multi_none":             { "S1": 1.0, "S2": 2.50, "S3": 5.00, "S4": 3.50 },
+        "multi_generics":         { "S1": 1.0, "S2": 3.20, "S3": 8.00, "S4": 5.20 },
+        "multi_brand_specialty":  { "S1": 1.0, "S2": 4.10, "S3": 12.00, "S4": 8.50 }
+      }
+    },
+    "cluster_2_behavioral": {
+      "gamma": 0.55,
+      "lr_table": {
+        "none":                   { "S1": 1.0, "S2": 0.90, "S3": 0.60, "S4": 0.80 },
+        "occasional_therapy":     { "S1": 1.0, "S2": 1.60, "S3": 2.80, "S4": 1.50 },
+        "continuous_therapy_mat": { "S1": 1.0, "S2": 2.20, "S3": 5.40, "S4": 3.20 }
+      }
+    },
+    "cluster_3_acuity_baseline": {
+      "gamma": 0.35,
+      "lr_table": {
+        "routine":                { "S1": 1.0, "S2": 0.85, "S3": 0.65, "S4": 0.45 },
+        "urgent_care":            { "S1": 1.0, "S2": 1.70, "S3": 2.10, "S4": 1.80 },
+        "er_inpatient":           { "S1": 1.0, "S2": 2.40, "S3": 4.50, "S4": 8.20 }
+      }
+    }
+  },
+  "claim_distributions": {
+    "S1": {
+      "outpatient_visits":   { "frequency_lambda": 1.5, "severity_mean": 180,  "severity_sd": 60,  "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "generic_rx":          { "frequency_lambda": 3.0, "severity_mean": 15,   "severity_sd": 5,   "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "brand_specialty_rx":  { "frequency_lambda": 0.1, "severity_mean": 240,  "severity_sd": 120, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "er_inpatient":        { "frequency_lambda": 0.05,"severity_mean": 900,  "severity_sd": 400, "confidence": "illustrative", "source": "MEPS 2022 quantiles" }
+    },
+    "S2": {
+      "outpatient_visits":   { "frequency_lambda": 4.0, "severity_mean": 220,  "severity_sd": 80,  "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "generic_rx":          { "frequency_lambda": 8.0, "severity_mean": 20,   "severity_sd": 8,   "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "brand_specialty_rx":  { "frequency_lambda": 0.5, "severity_mean": 450,  "severity_sd": 200, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "er_inpatient":        { "frequency_lambda": 0.25,"severity_mean": 2200, "severity_sd": 900, "confidence": "illustrative", "source": "MEPS 2022 quantiles" }
+    },
+    "S3": {
+      "outpatient_visits":   { "frequency_lambda": 12.0,"severity_mean": 260,  "severity_sd": 110, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "generic_rx":          { "frequency_lambda": 24.0,"severity_mean": 28,   "severity_sd": 10,  "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "brand_specialty_rx":  { "frequency_lambda": 4.0, "severity_mean": 850,  "severity_sd": 400, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "er_inpatient":        { "frequency_lambda": 0.60,"severity_mean": 4500, "severity_sd": 1800,"confidence": "illustrative", "source": "MEPS 2022 quantiles" }
+    },
+    "S4": {
+      "outpatient_visits":   { "frequency_lambda": 22.0,"severity_mean": 340,  "severity_sd": 160, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "generic_rx":          { "frequency_lambda": 36.0,"severity_mean": 35,   "severity_sd": 15,  "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "brand_specialty_rx":  { "frequency_lambda": 10.0,"severity_mean": 1800, "severity_sd": 800, "confidence": "illustrative", "source": "MEPS 2022 quantiles" },
+      "er_inpatient":        { "frequency_lambda": 2.2, "severity_mean": 18500,"severity_sd": 7500,"confidence": "illustrative", "source": "MEPS 2022 quantiles" }
+    }
+  }
+}

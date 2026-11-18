@@ -1,0 +1,54 @@
+{
+  "plan_year": {
+    "value": 2026,
+    "source": "Covered California 2026 Plan Year Guidelines",
+    "asOf": "2026-10-01",
+    "confidence": "actual"
+  },
+  "lastVerified": "2026-10-15",
+  "fpl_base_1_person": {
+    "value": 15060,
+    "source": "HHS Poverty Guidelines for 2025/2026 Plan Year",
+    "asOf": "2026-01-15",
+    "confidence": "actual"
+  },
+  "fpl_per_additional_person": {
+    "value": 5380,
+    "source": "HHS Poverty Guidelines for 2025/2026 Plan Year",
+    "asOf": "2026-01-15",
+    "confidence": "actual"
+  },
+  "cliff_thresholds": {
+    "value": [1.38, 1.50, 2.00, 4.00],
+    "source": "ACA Section 1401 and Covered CA Reconciliation Caps",
+    "asOf": "2026-01-01",
+    "confidence": "actual"
+  },
+  "tier_ratios": {
+    "Bronze": 0.78,
+    "Bronze_HDHP": 0.74,
+    "Silver": 1.00,
+    "Gold": 1.28,
+    "Platinum": 1.55
+  },
+  "statewide_benchmark_silver_gross_by_age": {
+    "18-25": { "value": 380, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" },
+    "26-34": { "value": 430, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" },
+    "35-44": { "value": 480, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" },
+    "45-54": { "value": 570, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" },
+    "55-64": { "value": 720, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" },
+    "65+":   { "value": 780, "source": "Covered CA 2026 SLCSP average, Region 6", "asOf": "2025-10-01", "confidence": "projected" }
+  },
+  "annual_hsa_limit_ind": {
+    "value": 4400,
+    "source": "IRS Rev. Proc. 2024-25 HSA limit, projected to plan year",
+    "asOf": "2025-10-01",
+    "confidence": "projected"
+  },
+  "annual_hsa_limit_fam": {
+    "value": 8750,
+    "source": "IRS Rev. Proc. 2024-25 HSA family limit, projected to plan year",
+    "asOf": "2025-10-01",
+    "confidence": "projected"
+  }
+}

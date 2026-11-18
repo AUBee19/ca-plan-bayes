@@ -1,0 +1,111 @@
+{
+  "source": "Covered California Standard Benefit Plan Designs 2026",
+  "asOf": "2026-10-01",
+  "confidence": "actual",
+  "tiers": {
+    "Bronze": {
+      "medical_deductible_ind": 6300,
+      "rx_deductible_ind": 500,
+      "oop_max_ind": 9100,
+      "medical_deductible_fam": 12600,
+      "oop_max_fam": 18200,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 3,
+      "pcp_copay": 65,
+      "specialist_copay": 95,
+      "coinsurance_rate": 0.40,
+      "hsa_eligible": false
+    },
+    "Bronze_HDHP": {
+      "medical_deductible_ind": 7500,
+      "rx_deductible_ind": 0,
+      "oop_max_ind": 7500,
+      "medical_deductible_fam": 15000,
+      "oop_max_fam": 15000,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 0,
+      "pcp_copay": 0,
+      "specialist_copay": 0,
+      "coinsurance_rate": 0.0,
+      "hsa_eligible": true
+    },
+    "Silver": {
+      "medical_deductible_ind": 5400,
+      "rx_deductible_ind": 350,
+      "oop_max_ind": 9100,
+      "medical_deductible_fam": 10800,
+      "oop_max_fam": 18200,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 3,
+      "pcp_copay": 45,
+      "specialist_copay": 85,
+      "coinsurance_rate": 0.20,
+      "hsa_eligible": false
+    },
+    "Silver_73": {
+      "medical_deductible_ind": 4700,
+      "rx_deductible_ind": 300,
+      "oop_max_ind": 7500,
+      "medical_deductible_fam": 9400,
+      "oop_max_fam": 15000,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 3,
+      "pcp_copay": 40,
+      "specialist_copay": 75,
+      "coinsurance_rate": 0.20,
+      "hsa_eligible": false
+    },
+    "Silver_87": {
+      "medical_deductible_ind": 800,
+      "rx_deductible_ind": 100,
+      "oop_max_ind": 3100,
+      "medical_deductible_fam": 1600,
+      "oop_max_fam": 6200,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 3,
+      "pcp_copay": 20,
+      "specialist_copay": 40,
+      "coinsurance_rate": 0.15,
+      "hsa_eligible": false
+    },
+    "Silver_94": {
+      "medical_deductible_ind": 75,
+      "rx_deductible_ind": 0,
+      "oop_max_ind": 1300,
+      "medical_deductible_fam": 150,
+      "oop_max_fam": 2600,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 3,
+      "pcp_copay": 5,
+      "specialist_copay": 10,
+      "coinsurance_rate": 0.10,
+      "hsa_eligible": false
+    },
+    "Gold": {
+      "medical_deductible_ind": 0,
+      "rx_deductible_ind": 0,
+      "oop_max_ind": 8750,
+      "medical_deductible_fam": 0,
+      "oop_max_fam": 17500,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 99,
+      "pcp_copay": 35,
+      "specialist_copay": 65,
+      "coinsurance_rate": 0.20,
+      "hsa_eligible": false
+    },
+    "Platinum": {
+      "medical_deductible_ind": 0,
+      "rx_deductible_ind": 0,
+      "oop_max_ind": 4500,
+      "medical_deductible_fam": 0,
+      "oop_max_fam": 9000,
+      "family_deductible_structure": "embedded",
+      "pre_deductible_pcp_visits": 99,
+      "pcp_copay": 15,
+      "specialist_copay": 30,
+      "coinsurance_rate": 0.10,
+      "hsa_eligible": false
+    }
+  }
+}
