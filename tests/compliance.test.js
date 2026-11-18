@@ -19,8 +19,9 @@ test('Compliance: App Code size budget <= 51,200 bytes (50 KB)', () => {
   let totalAppBytes = 0;
   for (const f of appFiles) {
     const fullPath = path.join(projectRoot, f);
-    const stat = fs.statSync(fullPath);
-    totalAppBytes += stat.size;
+    // Normalize CRLF so the budget is the same on Windows (core.autocrlf) and LF checkouts.
+    const content = fs.readFileSync(fullPath, 'utf-8').replace(/\r\n/g, '\n');
+    totalAppBytes += Buffer.byteLength(content, 'utf-8');
   }
 
   assert.ok(
