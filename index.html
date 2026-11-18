@@ -1,282 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>California Health Plan Finder</title>
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>California Health Plan Finder</title>
+<link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="badge-bar">
-        <span class="privacy-badge">0 External Requests • 100% Private In-Browser</span>
-        <div>
-          <button id="btnNonGoals" class="btn-text">Disclosures</button>
-          <span style="color:var(--border)">|</span>
-          <button id="btnCecHelp" class="btn-text">Free Counselor Help (CEC)</button>
-        </div>
-      </div>
-      <h1 style="font-size:1.25rem;color:#f8fafc">California Health Plan Decision Guide</h1>
-      <p style="font-size:0.83rem;color:var(--muted);margin-top:2px">Find your optimal health plan using personalized risk and cost simulation.</p>
-    </header>
-
-    <div class="disclaimer-banner">
-      <strong>Statutory Disclaimer:</strong> Not affiliated with Covered California, DHCS, or HHS; not a licensed broker. Estimates only — not binding quotes, official subsidy determinations, or medical advice.
-    </div>
-
-    <nav class="wz-bar" aria-label="Steps">
-      <div class="wz-step active" data-wz="1" id="wzTab1"><span class="wz-num">1</span> Coverage</div>
-      <span class="wz-sep">›</span>
-      <div class="wz-step" data-wz="2" id="wzTab2"><span class="wz-num">2</span> Household</div>
-      <span class="wz-sep">›</span>
-      <div class="wz-step" data-wz="3" id="wzTab3"><span class="wz-num">3</span> Health Needs</div>
-      <span class="wz-sep">›</span>
-      <div class="wz-step" data-wz="4" id="wzTab4"><span class="wz-num">4</span> Plans</div>
-      <span class="wz-sep">›</span>
-      <div class="wz-step" data-wz="5" id="wzTab5"><span class="wz-num">5</span> Results</div>
-    </nav>
-
-    <!-- STEP 1: Coverage Category -->
-    <div class="wz-pane active" id="pane1">
-      <div class="card">
-        <h2><span>Step 1: Coverage Type</span><span id="marketBadge" class="pill pill-actual">Covered CA</span></h2>
-        <div class="grid grid-2">
-          <div class="field">
-            <label for="coverageCategory">Insurance Market Type</label>
-            <select id="coverageCategory">
-              <option value="covered_ca" selected>Covered California (Individual & Family)</option>
-              <option value="commercial">Commercial / Employer Plan</option>
-            </select>
-          </div>
-          <div class="field" id="residencyField">
-            <label for="residencyStatus">California Residency & Eligibility</label>
-            <select id="residencyStatus">
-              <option value="lawfully_present" selected>Citizen or Lawfully Present</option>
-              <option value="ca_medi_cal_only">CA Medi-Cal Only (Undocumented / Restricted)</option>
-              <option value="unsure_or_mixed">Mixed-Status Household / Need Guidance</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="wz-nav">
-        <span></span>
-        <button type="button" class="btn-primary" onclick="window.navWz(2)">Continue to Household ›</button>
-      </div>
-    </div>
-
-    <!-- STEP 2: Household & Income -->
-    <div class="wz-pane" id="pane2">
-      <div class="card">
-        <h2>Step 2: Household & Income Profile</h2>
-        <div class="grid grid-3">
-          <div class="field">
-            <label for="householdSize">Household Size (on tax return)</label>
-            <input type="number" id="householdSize" min="1" max="12" value="1">
-          </div>
-          <div class="field">
-            <label for="magi">Estimated Yearly Income ($/year)</label>
-            <input type="number" id="magi" min="0" step="500" value="38000">
-          </div>
-          <div class="field">
-            <label for="ageBand">Your Age Group</label>
-            <select id="ageBand">
-              <option value="18-25">18–25</option><option value="26-34">26–34</option><option value="35-44" selected>35–44</option>
-              <option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option>
-            </select>
-          </div>
-        </div>
-        <div class="grid grid-3" style="margin-top:8px">
-          <div class="field">
-            <label for="memberSex">Biological Sex (MEPS baseline)</label>
-            <select id="memberSex"><option value="female" selected>Female</option><option value="male">Male</option></select>
-          </div>
-          <div class="field">
-            <label for="hsaPlanned">Annual HSA Contribution ($/year)</label>
-            <input type="number" id="hsaPlanned" min="0" step="100" value="0">
-          </div>
-          <div class="field">
-            <label for="marginalTax">Estimated Tax Bracket</label>
-            <select id="marginalTax"><option value="0.12">12%</option><option value="0.22" selected>22%</option><option value="0.32">32%</option></select>
-          </div>
-        </div>
-        <div style="margin-top:8px">
-          <label class="checkbox-line">
-            <input type="checkbox" id="chkFicaExempt">
-            Employer payroll HSA deduction (Section 125 saves FICA taxes)
-          </label>
-        </div>
-        <div id="fplAlertArea"></div>
-      </div>
-      <div class="wz-nav">
-        <button type="button" class="btn-secondary" onclick="window.navWz(1)">‹ Back</button>
-        <button type="button" class="btn-primary" onclick="window.navWz(3)">Continue to Health Needs ›</button>
-      </div>
-    </div>
-
-    <!-- STEP 3: Health Needs & Preferences -->
-    <div class="wz-pane" id="pane3">
-      <div class="card">
-        <h2>Step 3: Expected Care & Preferences</h2>
-        <div class="grid grid-3">
-          <div class="field">
-            <label for="cluster1Input">Conditions & Medications</label>
-            <select id="cluster1Input">
-              <option value="none_none" selected>No Chronic Conditions • No Rx</option>
-              <option value="none_generics">No Chronic Conditions • Generic Rx</option>
-              <option value="none_brand_specialty">No Chronic Conditions • Brand/Specialty Rx</option>
-              <option value="one_none">1 Managed Condition • No Rx</option>
-              <option value="one_generics">1 Managed Condition • Generic Rx</option>
-              <option value="one_brand_specialty">1 Managed Condition • Brand/Specialty Rx</option>
-              <option value="multi_none">Multiple Conditions • No Rx</option>
-              <option value="multi_generics">Multiple Conditions • Generic Rx</option>
-              <option value="multi_brand_specialty">Multiple Conditions • Brand/Specialty Rx</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="cluster2Input">Mental Health & Therapy Needs</label>
-            <select id="cluster2Input">
-              <option value="none" selected>None / Not expected</option>
-              <option value="episodic_counseling">Episodic (1–4 visits/yr)</option>
-              <option value="routine_therapy_rx">Routine Therapy + Maintenance Rx</option>
-              <option value="continuous_therapy_mat">Continuous Therapy (Weekly)</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="cluster3Input">Past Care Frequency</label>
-            <select id="cluster3Input">
-              <option value="routine" selected>Routine Preventive Checkups Only</option>
-              <option value="urgent_care_specialist">Minor Illnesses & Specialist</option>
-              <option value="er_inpatient">ER Visit or Hospital Stay</option>
-            </select>
-          </div>
-        </div>
-        <div class="grid grid-2" style="margin-top:8px">
-          <div class="field">
-            <label for="suddenBillTolerance">Surprise Bill Protection Comfort</label>
-            <select id="suddenBillTolerance">
-              <option value="0.05">Lower Monthly Premium (Accept higher deductible)</option>
-              <option value="0.25" selected>Balanced Protection (Moderate cost vs safety)</option>
-              <option value="0.60">Maximum Protection (Shield against surprise bills)</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="networkFilter">Doctor & Hospital Network Preference</label>
-            <select id="networkFilter">
-              <option value="all" selected>All Networks (HMO, PPO, EPO)</option>
-              <option value="ppo_epo">PPO / EPO Only (Broad doctor choice)</option>
-              <option value="hmo">HMO Only (Coordinated care & lower cost)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="wz-nav">
-        <button type="button" class="btn-secondary" onclick="window.navWz(2)">‹ Back</button>
-        <button type="button" class="btn-primary" onclick="window.navWz(4)">Continue to Plan Options ›</button>
-      </div>
-    </div>
-
-    <!-- STEP 4: Plan Inputs -->
-    <div class="wz-pane" id="pane4">
-      <div class="card">
-        <h2>Step 4: Plans to Compare</h2>
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="benchmark">Quick Benchmark</button>
-          <button class="tab-btn" data-tab="csv">CSV Upload</button>
-          <button class="tab-btn" data-tab="paste">Paste Text [Beta]</button>
-          <button class="tab-btn" data-tab="manual">Add Custom</button>
-        </div>
-        <div id="tab-benchmark" class="tab-pane active">
-          <div class="grid grid-2">
-            <div class="field">
-              <label for="benchGrossSilver">Full Benchmark Silver Premium ($/mo) <span class="pill pill-projected">Projected</span></label>
-              <input type="number" id="benchGrossSilver" min="0" step="10" value="480">
-            </div>
-            <div class="field">
-              <label for="benchMonthlySubsidy">Monthly Financial Help / Subsidy ($/mo) <span class="pill pill-projected">Projected</span></label>
-              <input type="number" id="benchMonthlySubsidy" min="0" step="10" value="320">
-            </div>
-          </div>
-        </div>
-        <div id="tab-csv" class="tab-pane">
-          <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom:6px">
-          <button id="btnDownloadCsvTemplate" class="btn-secondary" style="font-size:0.8rem">Download CSV Template</button>
-        </div>
-        <div id="tab-paste" class="tab-pane">
-          <textarea id="pastedText" rows="3" style="width:100%;padding:6px;font-size:0.85rem" placeholder="Paste plan text summary here..."></textarea>
-          <button id="btnParsePasted" class="btn-secondary" style="margin-top:6px;font-size:0.8rem">Scrub PII & Extract</button>
-        </div>
-        <div id="tab-manual" class="tab-pane">
-          <div class="grid grid-3">
-            <div class="field"><label for="customPlanName">Plan Name</label><input type="text" id="customPlanName" placeholder="e.g. Employer PPO 500"></div>
-            <div class="field"><label for="customCarrier">Carrier</label><input type="text" id="customCarrier" placeholder="e.g. Blue Shield"></div>
-            <div class="field"><label for="customNetPremium">Monthly Premium ($/mo)</label><input type="number" id="customNetPremium" min="0" value="120"></div>
-          </div>
-          <div class="grid grid-3" style="margin-top:6px">
-            <div class="field"><label for="customDed">Individual Deductible ($)</label><input type="number" id="customDed" min="0" value="500"></div>
-            <div class="field"><label for="customOopMax">Individual OOP Max ($)</label><input type="number" id="customOopMax" min="0" value="4000"></div>
-            <div class="field"><label for="customCopay">Doctor Copay ($)</label><input type="number" id="customCopay" min="0" value="25"></div>
-          </div>
-          <button id="btnAddCustomPlan" class="btn-primary" style="margin-top:8px;font-size:0.85rem">+ Add Plan</button>
-        </div>
-      </div>
-      <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button id="btnRunSimulation" class="btn-run">Find My Best Plan (5,000 Draws)</button>
-        <label class="checkbox-line"><input type="checkbox" id="chkOptInStorage"> Remember inputs for this session</label>
-        <button id="btnPurgeMemory" class="btn-text" style="color:var(--danger);font-size:0.82rem">Clear All Inputs</button>
-      </div>
-      <div class="wz-nav">
-        <button type="button" class="btn-secondary" onclick="window.navWz(3)">‹ Back</button>
-        <span></span>
-      </div>
-    </div>
-
-    <!-- STEP 5: Results -->
-    <div class="wz-pane" id="pane5">
-      <div id="resultsContainer">
-        <div class="card">
-          <h2><span>Your Plan Recommendations</span><span id="resSimCount" class="pill pill-actual">5,000 Draws</span></h2>
-          <div id="attributionBanner"></div>
-          <div id="plansList" style="margin-top:10px"></div>
-        </div>
-      </div>
-      <div class="wz-nav">
-        <button type="button" class="btn-secondary" onclick="window.navWz(4)">‹ Back to Plans</button>
-        <button type="button" class="btn-secondary" onclick="window.navWz(1)">↺ Adjust Profile</button>
-      </div>
-    </div>
-
-    <!-- Modals -->
-    <div id="modalNonGoals" class="modal-backdrop hidden">
-      <div class="modal-content">
-        <h2 style="color:var(--primary);margin-bottom:8px">Disclosures & Non-Goals</h2>
-        <ul style="font-size:0.85rem;color:#cbd5e1;line-height:1.6;margin-left:16px;margin-bottom:12px">
-          <li><strong>Not a Broker:</strong> We do not sell insurance or earn commissions.</li>
-          <li><strong>Estimates:</strong> Monte Carlo distributions represent statistical medians and tails derived from MEPS calibrations.</li>
-          <li><strong>Zero Egress:</strong> All computations run strictly in your local browser memory.</li>
-          <li><strong>Provider Networks:</strong> Verify doctor networks and medications directly with carriers.</li>
-        </ul>
-        <button id="btnCloseNonGoals" class="btn-primary">Close</button>
-      </div>
-    </div>
-
-    <div id="modalCec" class="modal-backdrop hidden">
-      <div class="modal-content">
-        <h2 style="color:var(--accent);margin-bottom:8px">Free Certified Enrollment Counselor (CEC) Help</h2>
-        <div style="background:#0f172a;padding:8px;border-radius:6px;font-size:0.85rem;line-height:1.6;margin-bottom:10px">
-          <p><strong>Checklist for Your Free Counselor Call:</strong></p>
-          <ul style="margin-left:14px;margin-top:4px">
-            <li>Proof of projected annual income (W-2, paystubs, or tax return).</li>
-            <li>List of current prescriptions and primary care physicians.</li>
-            <li>Household immigration / residency documentation.</li>
-            <li>Dataset calibration verified as of: <span id="cecLastVerified">--</span></li>
-          </ul>
-        </div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:10px">Find local help at: <strong>coveredca.com/find-help</strong> or call <strong>(800) 300-1506</strong>.</p>
-        <button id="btnCloseCec" class="btn-primary">Close</button>
-      </div>
-    </div>
-  </div>
-  <script type="module" src="./src/app.js"></script>
+<div class="container">
+<header>
+<div class="badge-bar">
+<span class="privacy-badge">0 External Requests • 100% Private In-Browser</span>
+<div>
+<button id="btnNonGoals" class="btn-text">Disclosures</button>
+<span class="sep">|</span>
+<button id="btnCecHelp" class="btn-text">Free Counselor Help (CEC)</button>
+</div>
+</div>
+<h1>California Health Plan Decision Guide</h1>
+<p class="sub">Find your optimal health plan using personalized risk and cost simulation.</p>
+</header>
+<div class="disclaimer-banner">
+<strong>Statutory Disclaimer:</strong> Not affiliated with Covered California, DHCS, or HHS; not a licensed broker. Estimates only — not binding quotes, official subsidy determinations, or medical advice.
+</div>
+<nav class="wz-bar" aria-label="Steps">
+<div class="wz-step active" data-wz="1" id="wzTab1"><span class="wz-num">1</span> Coverage</div>
+<span class="wz-sep">›</span>
+<div class="wz-step" data-wz="2" id="wzTab2"><span class="wz-num">2</span> Household</div>
+<span class="wz-sep">›</span>
+<div class="wz-step" data-wz="3" id="wzTab3"><span class="wz-num">3</span> Health Needs</div>
+<span class="wz-sep">›</span>
+<div class="wz-step" data-wz="4" id="wzTab4"><span class="wz-num">4</span> Plans</div>
+<span class="wz-sep">›</span>
+<div class="wz-step" data-wz="5" id="wzTab5"><span class="wz-num">5</span> Results</div>
+</nav>
+<div class="wz-pane active" id="pane1">
+<div class="card">
+<h2><span>Step 1: Coverage Type</span><span id="marketBadge" class="pill pill-actual">Covered CA</span></h2>
+<div class="grid grid-2">
+<div class="field">
+<label for="coverageCategory">Insurance Market Type</label>
+<select id="coverageCategory">
+<option value="covered_ca" selected>Covered California (Individual & Family)</option>
+<option value="commercial">Commercial / Employer Plan</option>
+</select>
+</div>
+<div class="field" id="residencyField">
+<label for="residencyStatus">California Residency & Eligibility</label>
+<select id="residencyStatus">
+<option value="lawfully_present" selected>Citizen or Lawfully Present</option>
+<option value="ca_medi_cal_only">CA Medi-Cal Only (Undocumented / Restricted)</option>
+<option value="unsure_or_mixed">Mixed-Status Household / Need Guidance</option>
+</select>
+</div>
+</div>
+</div>
+<div class="wz-nav">
+<span></span>
+<button type="button" class="btn-primary" onclick="window.navWz(2)">Continue to Household ›</button>
+</div>
+</div>
+<div class="wz-pane" id="pane2">
+<div class="card">
+<h2>Step 2: Household & Income Profile</h2>
+<div class="grid grid-3">
+<div class="field">
+<label for="householdSize">Household Size (on tax return)</label>
+<input type="number" id="householdSize" min="1" max="12" value="1">
+</div>
+<div class="field">
+<label for="magi">Estimated Yearly Income ($/year)</label>
+<input type="number" id="magi" min="0" step="500" value="38000">
+</div>
+<div class="field">
+<label for="ageBand">Your Age Group</label>
+<select id="ageBand">
+<option value="18-25">18–25</option><option value="26-34">26–34</option><option value="35-44" selected>35–44</option>
+<option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option>
+</select>
+</div>
+</div>
+<div class="grid grid-3 mt8">
+<div class="field">
+<label for="memberSex">Biological Sex (MEPS baseline)</label>
+<select id="memberSex"><option value="female" selected>Female</option><option value="male">Male</option></select>
+</div>
+<div class="field">
+<label for="hsaPlanned">Annual HSA Contribution ($/year)</label>
+<input type="number" id="hsaPlanned" min="0" step="100" value="0">
+</div>
+<div class="field">
+<label for="marginalTax">Estimated Tax Bracket</label>
+<select id="marginalTax"><option value="0.12">12%</option><option value="0.22" selected>22%</option><option value="0.32">32%</option></select>
+</div>
+</div>
+<div class="mt8">
+<label class="checkbox-line">
+<input type="checkbox" id="chkFicaExempt">
+Employer payroll HSA deduction (Section 125 saves FICA taxes)
+</label>
+</div>
+<div id="fplAlertArea"></div>
+</div>
+<div class="wz-nav">
+<button type="button" class="btn-secondary" onclick="window.navWz(1)">‹ Back</button>
+<button type="button" class="btn-primary" onclick="window.navWz(3)">Continue to Health Needs ›</button>
+</div>
+</div>
+<div class="wz-pane" id="pane3">
+<div class="card">
+<h2>Step 3: Expected Care & Preferences</h2>
+<div class="grid grid-3">
+<div class="field">
+<label for="cluster1Input">Conditions & Medications</label>
+<select id="cluster1Input">
+<option value="none_none" selected>No Chronic Conditions • No Rx</option>
+<option value="none_generics">No Chronic Conditions • Generic Rx</option>
+<option value="none_brand_specialty">No Chronic Conditions • Brand/Specialty Rx</option>
+<option value="one_none">1 Managed Condition • No Rx</option>
+<option value="one_generics">1 Managed Condition • Generic Rx</option>
+<option value="one_brand_specialty">1 Managed Condition • Brand/Specialty Rx</option>
+<option value="multi_none">Multiple Conditions • No Rx</option>
+<option value="multi_generics">Multiple Conditions • Generic Rx</option>
+<option value="multi_brand_specialty">Multiple Conditions • Brand/Specialty Rx</option>
+</select>
+</div>
+<div class="field">
+<label for="cluster2Input">Mental Health & Therapy Needs</label>
+<select id="cluster2Input">
+<option value="none" selected>None / Not expected</option>
+<option value="episodic_counseling">Episodic (1–4 visits/yr)</option>
+<option value="routine_therapy_rx">Routine Therapy + Maintenance Rx</option>
+<option value="continuous_therapy_mat">Continuous Therapy (Weekly)</option>
+</select>
+</div>
+<div class="field">
+<label for="cluster3Input">Past Care Frequency</label>
+<select id="cluster3Input">
+<option value="routine" selected>Routine Preventive Checkups Only</option>
+<option value="urgent_care_specialist">Minor Illnesses & Specialist</option>
+<option value="er_inpatient">ER Visit or Hospital Stay</option>
+</select>
+</div>
+</div>
+<div class="grid grid-2 mt8">
+<div class="field">
+<label for="suddenBillTolerance">Surprise Bill Protection Comfort</label>
+<select id="suddenBillTolerance">
+<option value="0.05">Lower Monthly Premium (Accept higher deductible)</option>
+<option value="0.25" selected>Balanced Protection (Moderate cost vs safety)</option>
+<option value="0.60">Maximum Protection (Shield against surprise bills)</option>
+</select>
+</div>
+<div class="field">
+<label for="networkFilter">Doctor & Hospital Network Preference</label>
+<select id="networkFilter">
+<option value="all" selected>All Networks (HMO, PPO, EPO)</option>
+<option value="ppo_epo">PPO / EPO Only (Broad doctor choice)</option>
+<option value="hmo">HMO Only (Coordinated care & lower cost)</option>
+</select>
+</div>
+</div>
+</div>
+<div class="wz-nav">
+<button type="button" class="btn-secondary" onclick="window.navWz(2)">‹ Back</button>
+<button type="button" class="btn-primary" onclick="window.navWz(4)">Continue to Plan Options ›</button>
+</div>
+</div>
+<div class="wz-pane" id="pane4">
+<div class="card">
+<h2>Step 4: Plans to Compare</h2>
+<div class="tabs">
+<button class="tab-btn active" data-tab="benchmark">Quick Benchmark</button>
+<button class="tab-btn" data-tab="csv">CSV Upload</button>
+<button class="tab-btn" data-tab="paste">Paste Text [Beta]</button>
+<button class="tab-btn" data-tab="manual">Add Custom</button>
+</div>
+<div id="tab-benchmark" class="tab-pane active">
+<div class="grid grid-2">
+<div class="field">
+<label for="benchGrossSilver">Full Benchmark Silver Premium ($/mo) <span class="pill pill-projected">Projected</span></label>
+<input type="number" id="benchGrossSilver" min="0" step="10" value="480">
+</div>
+<div class="field">
+<label for="benchMonthlySubsidy">Monthly Financial Help / Subsidy ($/mo) <span class="pill pill-projected">Projected</span></label>
+<input type="number" id="benchMonthlySubsidy" min="0" step="10" value="320">
+</div>
+</div>
+</div>
+<div id="tab-csv" class="tab-pane">
+<input type="file" id="csvFileInput" accept=".csv" class="mb6">
+<button id="btnDownloadCsvTemplate" class="btn-secondary btn-sm">Download CSV Template</button>
+</div>
+<div id="tab-paste" class="tab-pane">
+<textarea id="pastedText" rows="3" placeholder="Paste plan text summary here..."></textarea>
+<button id="btnParsePasted" class="btn-secondary btn-sm mt6">Scrub PII & Extract</button>
+</div>
+<div id="tab-manual" class="tab-pane">
+<div class="grid grid-3">
+<div class="field"><label for="customPlanName">Plan Name</label><input type="text" id="customPlanName" placeholder="e.g. Employer PPO 500"></div>
+<div class="field"><label for="customCarrier">Carrier</label><input type="text" id="customCarrier" placeholder="e.g. Blue Shield"></div>
+<div class="field"><label for="customNetPremium">Monthly Premium ($/mo)</label><input type="number" id="customNetPremium" min="0" value="120"></div>
+</div>
+<div class="grid grid-3 mt6">
+<div class="field"><label for="customDed">Individual Deductible ($)</label><input type="number" id="customDed" min="0" value="500"></div>
+<div class="field"><label for="customOopMax">Individual OOP Max ($)</label><input type="number" id="customOopMax" min="0" value="4000"></div>
+<div class="field"><label for="customCopay">Doctor Copay ($)</label><input type="number" id="customCopay" min="0" value="25"></div>
+</div>
+<button id="btnAddCustomPlan" class="btn-primary mt8">+ Add Plan</button>
+</div>
+</div>
+<div class="actions-row">
+<button id="btnRunSimulation" class="btn-run">Find My Best Plan (5,000 Draws)</button>
+<label class="checkbox-line"><input type="checkbox" id="chkOptInStorage"> Remember inputs for this session</label>
+<button id="btnPurgeMemory" class="btn-text btn-danger">Clear All Inputs</button>
+</div>
+<div class="wz-nav">
+<button type="button" class="btn-secondary" onclick="window.navWz(3)">‹ Back</button>
+<span></span>
+</div>
+</div>
+<div class="wz-pane" id="pane5">
+<div id="resultsContainer">
+<div class="card">
+<h2><span>Your Plan Recommendations</span><span id="resSimCount" class="pill pill-actual">5,000 Draws</span></h2>
+<div id="attributionBanner"></div>
+<div id="plansList" class="mt10"></div>
+</div>
+</div>
+<div class="wz-nav">
+<button type="button" class="btn-secondary" onclick="window.navWz(4)">‹ Back to Plans</button>
+<button type="button" class="btn-secondary" onclick="window.navWz(1)">↺ Adjust Profile</button>
+</div>
+</div>
+<div id="modalNonGoals" class="modal-backdrop hidden">
+<div class="modal-content">
+<h2 class="modal-title-blue">Disclosures & Non-Goals</h2>
+<ul class="modal-list">
+<li><strong>Not a Broker:</strong> We do not sell insurance or earn commissions.</li>
+<li><strong>Estimates:</strong> Monte Carlo distributions represent statistical medians and tails derived from MEPS calibrations.</li>
+<li><strong>Zero Egress:</strong> All computations run strictly in your local browser memory.</li>
+<li><strong>Provider Networks:</strong> Verify doctor networks and medications directly with carriers.</li>
+</ul>
+<button id="btnCloseNonGoals" class="btn-primary">Close</button>
+</div>
+</div>
+<div id="modalCec" class="modal-backdrop hidden">
+<div class="modal-content">
+<h2 class="modal-title-green">Free Certified Enrollment Counselor (CEC) Help</h2>
+<div class="checklist">
+<p><strong>Checklist for Your Free Counselor Call:</strong></p>
+<ul>
+<li>Proof of projected annual income (W-2, paystubs, or tax return).</li>
+<li>List of current prescriptions and primary care physicians.</li>
+<li>Household immigration / residency documentation.</li>
+<li>Dataset calibration verified as of: <span id="cecLastVerified">--</span></li>
+</ul>
+</div>
+<p class="modal-foot">Find local help at: <strong>coveredca.com/find-help</strong> or call <strong>(800) 300-1506</strong>.</p>
+<button id="btnCloseCec" class="btn-primary">Close</button>
+</div>
+</div>
+</div>
+<script type="module" src="./src/app.js"></script>
 </body>
 </html>
